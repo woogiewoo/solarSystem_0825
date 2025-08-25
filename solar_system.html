@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+    <title>태양계</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            /* Create deep space background with gradient */
+            background: radial-gradient(ellipse at center, #0f0f23 0%, #000000 70%, #000000 100%);
+            position: relative;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        /* Main container for the solar system */
+        .solar-system {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* Central sun styling with bright glow effect */
+        .sun {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffff00, #ff8c00, #ff4500);
+            /* Multiple box-shadows create a bright glowing effect */
+            box-shadow: 
+                0 0 20px #ffff00,
+                0 0 40px #ffff00,
+                0 0 60px #ff8c00,
+                0 0 80px #ff4500;
+            /* Center the sun on screen */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            animation: sunPulse 3s ease-in-out infinite alternate;
+        }
+
+        /* Subtle pulsing animation for the sun */
+        @keyframes sunPulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* Base planet styling */
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            /* Smooth scaling transition for hover effects */
+            transition: transform 0.3s ease-in-out;
+            /* Subtle glow around each planet */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Individual planet color schemes with realistic proportions */
+        .mercury {
+            width: 18px;
+            height: 18px;
+            background: radial-gradient(circle at 30% 30%, #8c7853, #5c5448);
+        }
+
+        .venus {
+            width: 28px;
+            height: 28px;
+            background: radial-gradient(circle at 30% 30%, #ffc649, #ad8b00);
+        }
+
+        .earth {
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle at 30% 30%, #6b93d6, #4d648d, #2d5016);
+        }
+
+        .mars {
+            width: 22px;
+            height: 22px;
+            background: radial-gradient(circle at 30% 30%, #cd5c5c, #a0522d);
+        }
+
+        .jupiter {
+            width: 85px;
+            height: 85px;
+            background: radial-gradient(circle at 30% 30%, #d2691e, #8b4513, #deb887);
+        }
+
+        .saturn {
+            width: 75px;
+            height: 75px;
+            background: radial-gradient(circle at 30% 30%, #fab27b, #aa6c39);
+            /* Add Saturn's ring effect */
+            box-shadow: 
+                0 0 15px rgba(255, 255, 255, 0.2),
+                0 0 0 8px rgba(218, 165, 32, 0.3),
+                0 0 0 12px rgba(139, 69, 19, 0.2);
+        }
+
+        .uranus {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle at 30% 30%, #4fd0e7, #3f9db8);
+        }
+
+        .neptune {
+            width: 48px;
+            height: 48px;
+            background: radial-gradient(circle at 30% 30%, #4169e1, #191970);
+        }
+
+        /* Background stars for space effect */
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            /* Twinkling animation with random delays */
+            animation: twinkle 4s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.6; transform: scale(1); }
+        }
+
+        /* Title and instructions */
+        .title {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 2.5rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 20;
+            font-weight: 500;
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.8);
+            font-size: 1rem;
+            text-align: center;
+            z-index: 20;
+        }
+
+        /* Planet name tooltip styling */
+        .planet-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 25;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .planet-tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .planet-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="title">태양계</div>
+    <div class="instructions">공전하는 행성들에 마우스를 올려보세요</div>
+    
+    <div class="solar-system" id="solarSystem">
+        <!-- Central sun element -->
+        <div class="sun" id="sun"></div>
+    </div>
+
+    <script>
+        // Global animation control variables
+        let animationId;
+        let isAnimating = true;
+        let planets = [];
+        let tooltip = null;
+        
+        // Get the center coordinates of the screen (where the sun is)
+        let centerX = window.innerWidth / 2;
+        let centerY = window.innerHeight / 2;
+
+        // Configuration for each planet with realistic proportions and slower orbital speeds
+        // Orbital speeds are much slower for smoother, more realistic motion
+        const planetConfigs = [
+            { name: 'Mercury', class: 'mercury', orbitRadius: 130, speed: 0.015, size: 18, rotationSpeed: 0.03 },
+            { name: 'Venus', class: 'venus', orbitRadius: 170, speed: 0.011, size: 28, rotationSpeed: 0.025 },
+            { name: 'Earth', class: 'earth', orbitRadius: 210, speed: 0.008, size: 30, rotationSpeed: 0.02 },
+            { name: 'Mars', class: 'mars', orbitRadius: 260, speed: 0.006, size: 22, rotationSpeed: 0.018 },
+            { name: 'Jupiter', class: 'jupiter', orbitRadius: 350, speed: 0.003, size: 85, rotationSpeed: 0.012 },
+            { name: 'Saturn', class: 'saturn', orbitRadius: 420, speed: 0.002, size: 75, rotationSpeed: 0.01 },
+            { name: 'Uranus', class: 'uranus', orbitRadius: 490, speed: 0.0015, size: 50, rotationSpeed: 0.008 },
+            { name: 'Neptune', class: 'neptune', orbitRadius: 560, speed: 0.001, size: 48, rotationSpeed: 0.006 }
+        ];
+
+        // Create background stars scattered randomly across the screen
+        function createStars() {
+            const container = document.getElementById('solarSystem');
+            
+            // Generate 150 stars at random positions
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Random position across the entire viewport
+                star.style.left = Math.random() * window.innerWidth + 'px';
+                star.style.top = Math.random() * window.innerHeight + 'px';
+                
+                // Random animation delay for natural twinkling effect
+                star.style.animationDelay = Math.random() * 4 + 's';
+                
+                // Random star size for variety
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                
+                container.appendChild(star);
+            }
+        }
+
+        // Create tooltip element for planet names
+        function createTooltip() {
+            tooltip = document.createElement('div');
+            tooltip.className = 'planet-tooltip';
+            document.body.appendChild(tooltip);
+        }
+
+        // Show tooltip with planet name
+        function showTooltip(planetName, x, y) {
+            if (tooltip) {
+                tooltip.textContent = planetName;
+                tooltip.style.left = (x - tooltip.offsetWidth / 2) + 'px';
+                tooltip.style.top = (y - 50) + 'px';  // Position above the planet
+                tooltip.classList.add('visible');
+            }
+        }
+
+        // Hide tooltip
+        function hideTooltip() {
+            if (tooltip) {
+                tooltip.classList.remove('visible');
+            }
+        }
+        function createPlanets() {
+            const container = document.getElementById('solarSystem');
+            
+            planetConfigs.forEach(config => {
+                // Create the planet DOM element
+                const planet = document.createElement('div');
+                planet.className = `planet ${config.class}`;
+                planet.id = config.name;
+                
+                // Create planet data object to track orbital state
+                const planetData = {
+                    element: planet,
+                    name: config.name,
+                    orbitRadius: config.orbitRadius,
+                    speed: config.speed,
+                    rotationSpeed: config.rotationSpeed,
+                    angle: Math.random() * Math.PI * 2, // Random starting position
+                    rotation: 0, // Self-rotation angle
+                    size: config.size,
+                    isHovered: false
+                };
+                
+                planets.push(planetData);
+                
+                // Add mouse event listeners for hover interactions
+                planet.addEventListener('mouseenter', () => handlePlanetHover(planetData));
+                planet.addEventListener('mouseleave', () => handlePlanetLeave(planetData));
+                
+                container.appendChild(planet);
+            });
+        }
+
+        // Handle planet hover: pause other animations, scale up hovered planet, show tooltip
+        function handlePlanetHover(hoveredPlanet, event) {
+            console.log(`Hovering over ${hoveredPlanet.name}`);
+            
+            // Cancel the main animation loop to pause orbital motion
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                isAnimating = false;
+            }
+            
+            // Mark this planet as hovered and apply scaling effect
+            hoveredPlanet.isHovered = true;
+            hoveredPlanet.element.style.transform = 'scale(1.6)';
+            hoveredPlanet.element.style.zIndex = '15';
+            
+            // Add extra glow effect when hovered
+            hoveredPlanet.element.style.boxShadow = '0 0 25px rgba(255, 255, 255, 0.7)';
+            
+            // Show tooltip with planet name
+            const rect = hoveredPlanet.element.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top;
+            showTooltip(hoveredPlanet.name, x, y);
+        }
+
+        // Update tooltip position when mouse moves over planet
+        function updateTooltipPosition(planet, event) {
+            if (planet.isHovered) {
+                const rect = planet.element.getBoundingClientRect();
+                const x = rect.left + rect.width / 2;
+                const y = rect.top;
+                showTooltip(planet.name, x, y);
+            }
+        }
+
+        // Handle planet leave: reset planet, resume all animations, hide tooltip
+        function handlePlanetLeave(planet) {
+            console.log(`Left ${planet.name}`);
+            
+            // Reset the planet to normal state
+            planet.isHovered = false;
+            planet.element.style.transform = 'scale(1)';
+            planet.element.style.zIndex = '1';
+            planet.element.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.2)';
+            
+            // Hide tooltip
+            hideTooltip();
+            
+            // Resume the orbital animation if it was paused
+            if (!isAnimating) {
+                isAnimating = true;
+                animate();
+            }
+        }
+
+        // Main animation loop using requestAnimationFrame
+        function animate() {
+            if (isAnimating) {
+                // Update each planet's position and rotation
+                planets.forEach(planetData => {
+                    // Skip animation for hovered planets
+                    if (!planetData.isHovered) {
+                        // Update orbital angle based on speed
+                        planetData.angle += planetData.speed;
+                        
+                        // Calculate new position using circular orbit equations
+                        // x = centerX + radius * cos(angle)
+                        // y = centerY + radius * sin(angle)
+                        const x = centerX + Math.cos(planetData.angle) * planetData.orbitRadius;
+                        const y = centerY + Math.sin(planetData.angle) * planetData.orbitRadius;
+                        
+                        // Update self-rotation for visual effect
+                        planetData.rotation += planetData.rotationSpeed;
+                        
+                        // Apply the calculated position
+                        planetData.element.style.left = (x - planetData.size / 2) + 'px';
+                        planetData.element.style.top = (y - planetData.size / 2) + 'px';
+                        
+                        // Apply self-rotation transform
+                        planetData.element.style.transform = `rotate(${planetData.rotation}rad)`;
+                    }
+                });
+                
+                // Request the next animation frame
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        // Handle window resize to recalculate center position
+        function handleResize() {
+            centerX = window.innerWidth / 2;
+            centerY = window.innerHeight / 2;
+            
+            // Update sun position
+            const sun = document.getElementById('sun');
+            sun.style.left = centerX + 'px';
+            sun.style.top = centerY + 'px';
+        }
+
+        // Initialize the solar system when page loads
+        function init() {
+            console.log('Initializing Solar System...');
+            
+            // Create background elements and tooltip
+            createStars();
+            createTooltip();
+            createPlanets();
+            
+            // Start the animation loop
+            animate();
+            
+            // Set up resize handler
+            window.addEventListener('resize', handleResize);
+        }
+
+        // Start everything when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
